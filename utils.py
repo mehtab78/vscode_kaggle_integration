@@ -113,7 +113,7 @@ class Zrok:
         if env_name is None:
             raise ValueError("Environment name must be provided either during initialization or when calling enable()")
         
-        subprocess.run(["zrok", "enable", self.token, "-d", env_name], check=True)
+        subprocess.run(["zrok", "enable", self.token, "-d", env_name, "--headless"], check=True)
 
     def disable(self, name: str = None):
         """Disable zrok.

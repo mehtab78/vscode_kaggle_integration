@@ -32,15 +32,16 @@ def main(args):
     # 2. Start zrok process
     print(f"zrok access private {share_token}")
     subprocess.Popen(
-        ["cmd", "/k", f"zrok access private {share_token}"],
-        creationflags=subprocess.CREATE_NEW_CONSOLE
-    )
+            ["zrok", "access", "private", share_token],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
 
     # 3. Wait 5 seconds for zrok connection
     time.sleep(5)
 
     # 4. Update SSH config
-    config_path = os.path.join(os.environ['USERPROFILE'], '.ssh', 'config')
+    config_path = os.path.expanduser('~/.ssh/config')
     os.makedirs(os.path.dirname(config_path), exist_ok=True)
     if not os.path.exists(config_path):
         with open(config_path, 'w', encoding='utf-8') as f:
@@ -67,10 +68,10 @@ def main(args):
     if not args.no_vscode:
         print("Launching VS Code with remote SSH connection...")
         subprocess.Popen(
-            ["code", "--remote", f"ssh-remote+{args.name}", args.workspace],
-            shell=True,
-            creationflags=subprocess.CREATE_NEW_CONSOLE | subprocess.CREATE_NEW_PROCESS_GROUP
-        )
+                ["code", "--remote", f"ssh-remote+{args.name}", args.workspace],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE
+            )
         print("VS Code launched. Please wait for the connection to establish...")
         time.sleep(5)  # Give some time for VS Code to start
 
