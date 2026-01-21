@@ -31,27 +31,16 @@ def main(args):
 
     # 2. Start zrok process
     print(f"zrok access private {share_token}")
-    if os.name == 'nt':  # Windows
-        subprocess.Popen(
-            ["cmd", "/k", f"zrok access private {share_token}"],
-            creationflags=subprocess.CREATE_NEW_CONSOLE
-        )
-    else:  # Linux/Mac
-        subprocess.Popen(
-            ["zrok", "access", "private", share_token],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
-        )
+    subprocess.Popen(
+        ["cmd", "/k", f"zrok access private {share_token}"],
+        creationflags=subprocess.CREATE_NEW_CONSOLE
+    )
 
     # 3. Wait 5 seconds for zrok connection
     time.sleep(5)
 
     # 4. Update SSH config
-    if os.name == 'nt':  # Windows
-        config_path = os.path.join(os.environ['USERPROFILE'], '.ssh', 'config')
-    else:  # Linux/Mac
-        config_path = os.path.expanduser('~/.ssh/config')
-    
+    config_path = os.path.join(os.environ['USERPROFILE'], '.ssh', 'config')
     os.makedirs(os.path.dirname(config_path), exist_ok=True)
     if not os.path.exists(config_path):
         with open(config_path, 'w', encoding='utf-8') as f:
@@ -77,18 +66,11 @@ def main(args):
     # 5. Launch VS Code remote-SSH
     if not args.no_vscode:
         print("Launching VS Code with remote SSH connection...")
-        if os.name == 'nt':  # Windows
-            subprocess.Popen(
-                ["code", "--remote", f"ssh-remote+{args.name}", args.workspace],
-                shell=True,
-                creationflags=subprocess.CREATE_NEW_CONSOLE | subprocess.CREATE_NEW_PROCESS_GROUP
-            )
-        else:  # Linux/Mac
-            subprocess.Popen(
-                ["code", "--remote", f"ssh-remote+{args.name}", args.workspace],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE
-            )
+        subprocess.Popen(
+            ["code", "--remote", f"ssh-remote+{args.name}", args.workspace],
+            shell=True,
+            creationflags=subprocess.CREATE_NEW_CONSOLE | subprocess.CREATE_NEW_PROCESS_GROUP
+        )
         print("VS Code launched. Please wait for the connection to establish...")
         time.sleep(5)  # Give some time for VS Code to start
 

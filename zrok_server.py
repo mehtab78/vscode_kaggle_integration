@@ -32,34 +32,6 @@ def main(args):
         password = generate_random_password()
         print(f"Setting password for root user: {password}")
         subprocess.run(f"echo 'root:{password}' | sudo chpasswd", shell=True, check=True)
-    
-    # Create zrok reserve for SSH tunnel
-    print("Creating zrok reserve for SSH tunnel...")
-    result = subprocess.run(
-        ["zrok", "reserve", "private", "localhost:22", "--backend-mode", "tcpTunnel"],
-        capture_output=True,
-        text=True,
-        check=True
-    )
-    
-    # Parse the share token from the output
-    share_token = None
-    for line in result.stdout.split('\n'):
-        if 'zrok access private' in line:
-            # Extract token from line like: "zrok access private <token>"
-            parts = line.strip().split()
-            if len(parts) >= 4:
-                share_token = parts[3]
-                break
-    
-    if share_token:
-        print(f"SSH tunnel reserved with share token: {share_token}")
-    else:
-        print("Warning: Could not extract share token from zrok output")
-        print(result.stdout)
-    
-    print("\nSSH tunnel is now available. Keep this process running.")
-    print("Run the client script to connect to this server.")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Kaggle SSH connection setup')
